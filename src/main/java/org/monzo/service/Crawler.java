@@ -2,8 +2,8 @@ package org.monzo.service;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class Crawler {
     private final String startUrl;
@@ -19,15 +19,16 @@ public class Crawler {
     }
 
     public void runCrawler(int parallelFactor) {
-        ExecutorService executorService = Executors.newFixedThreadPool(parallelFactor);
+        ThreadPoolExecutor executorService = (ThreadPoolExecutor)Executors.newCachedThreadPool();
         for (int i = 0; i < parallelFactor; i++) {
             Runnable task = this::crawlUrls;
             executorService.submit(task);
         }
+        System.out.println("get Task count after:"+ executorService.getTaskCount());
         executorService.shutdown();
     }
 
-    private synchronized void crawlUrls() {
+    private void crawlUrls() {
         while (!toBeVisited.isEmpty()) {
             String nextUrl = toBeVisited.poll();
             if (!visitedUrls.contains(nextUrl)) {

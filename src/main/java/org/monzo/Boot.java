@@ -4,7 +4,9 @@ import org.monzo.service.Crawler;
 public class Boot {
     public static void main(String[] args)  {
         Crawler crawler = new Crawler("https://monzo.com/", "https://monzo.com/");
-        int parallelFactor = 1;
+        //Number of threads = Number of Available Cores * Target CPU utilization * (1 + Wait time / Service time)
+        int availableCores = Runtime.getRuntime().availableProcessors();
+        int parallelFactor = Math.max(availableCores - 1, 1);
         if (args.length > 0) {
             try {
                 parallelFactor = Integer.parseInt(args[0]);
