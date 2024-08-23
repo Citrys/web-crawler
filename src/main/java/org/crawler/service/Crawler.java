@@ -25,7 +25,6 @@ public class Crawler {
             Runnable task = this::crawlUrls;
             executorService.submit(task);
         }
-        System.out.println("get Task count after:"+ executorService.getTaskCount());
         executorService.shutdown();
     }
 

@@ -2,7 +2,7 @@
 - Java > 21 version required
 - Gradle 8.5 version
 - Build: `./gradlew shadowJar`
-- Run: `java -jar build/libs/monzo-web-crawler-1.0-SNAPSHOT-all.jar n startUrl`, where `n` is the thread factor (up to 10), `startUrl`is domain that we want to crawl
+- Run: `java -jar build/libs/crawler-web-crawler-1.0-SNAPSHOT-all.jar n startUrl`, where `n` is the thread factor (up to 10), `startUrl`is domain that we want to crawl
 
 # Description:
 - Start and base urls can be provided in the run vars 

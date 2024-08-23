@@ -1,11 +1,11 @@
-package com.monzo.tests;
+package com.crawler.tests;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.After;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.monzo.service.Crawler;
+import org.crawler.service.Crawler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

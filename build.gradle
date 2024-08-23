@@ -14,7 +14,7 @@ group 'org.example'
 version '1.0-SNAPSHOT'
 
 ext {
-    javaMainClass = "org.monzo.Boot"
+    javaMainClass = "org.crawler.Boot"
 }
 
 application {
@@ -45,9 +45,9 @@ test {
 shadowJar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from(sourceSets["test"].output)
-    archiveBaseName.set("monzo-web-crawler")
+    archiveBaseName.set("crawler-web-crawler")
     mergeServiceFiles()
     manifest {
-        attributes 'Main-Class': 'org.monzo.Boot'
+        attributes 'Main-Class': 'org.crawler.Boot'
     }
 }
