@@ -1,7 +1,7 @@
 package com.monzo.tests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.monzo.service.WebPagesContentReader;
+import org.crawler.service.WebPagesContentReader;
 import java.util.ArrayList;
 
 

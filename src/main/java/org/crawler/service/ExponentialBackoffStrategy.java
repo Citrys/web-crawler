@@ -1,4 +1,4 @@
-package org.monzo.service;
+package org.crawler.service;
 
 import org.jetbrains.annotations.Nullable;
 

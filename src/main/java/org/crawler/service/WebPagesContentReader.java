@@ -1,4 +1,4 @@
-package org.monzo.service;
+package org.crawler.service;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
