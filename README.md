@@ -6,7 +6,7 @@
 
 # Description:
 - Start and base urls can be provided in the run vars 
-- The system preloads all URLs beginning with 'https://monzo.com/' into a concurrent queue at the start and uses only those URLs that begin with that prefix.
+- The system preloads all URLs beginning with 'https://bbc.com/' into a concurrent queue at the start and uses only those URLs that begin with that prefix domain.
 - Parallelism is controlled via the Java Executor service to simplify multithreading execution.
 - The service outputs the target URL and a list of links found on that page as stated in the task (console print).
 - Output example:
