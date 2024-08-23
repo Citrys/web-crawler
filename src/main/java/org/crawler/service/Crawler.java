@@ -1,14 +1,15 @@
-package org.monzo.service;
+package org.crawler.service;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class Crawler {
     private final String startUrl;
     private final String baseDomainUrl;
-    private final ArrayList<String> visitedUrls = new ArrayList<>();
+    private final ConcurrentHashMap<String, String> visitedUrls = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<String> toBeVisited = new ConcurrentLinkedQueue<>();
 
     public Crawler(String startUrl, String baseDomainUrl) {
@@ -19,11 +20,12 @@ public class Crawler {
     }
 
     public void runCrawler(int parallelFactor) {
-        ExecutorService executorService = Executors.newFixedThreadPool(parallelFactor);
+        ThreadPoolExecutor executorService = (ThreadPoolExecutor)Executors.newCachedThreadPool();
         for (int i = 0; i < parallelFactor; i++) {
             Runnable task = this::crawlUrls;
             executorService.submit(task);
         }
+        System.out.println("get Task count after:"+ executorService.getTaskCount());
         executorService.shutdown();
     }
 
@@ -42,7 +44,7 @@ public class Crawler {
                         toBeVisited.offer(url);
                     }
                 }
-                visitedUrls.add(nextUrl);
+                visitedUrls.put(nextUrl, nextUrl);
             }
         }
     }

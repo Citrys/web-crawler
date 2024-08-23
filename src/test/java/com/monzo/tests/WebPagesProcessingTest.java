@@ -1,7 +1,7 @@
 package com.monzo.tests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.monzo.service.WebPagesContentReader;
+import org.crawler.service.WebPagesContentReader;
 import java.util.ArrayList;
 
 
@@ -26,7 +26,7 @@ public class WebPagesProcessingTest {
 
     @Test
     public void shouldProcessInvalidUrl() {
-        ArrayList<String> pageLinks = new ArrayList<> (WebPagesContentReader.processPage(WebPagesContentReader.getPage("http://someasjfhklafd.com/asdasf"), "http://someasjfhklafd.com/assdasd", "http://someasjfhklafd.com"));
+        ArrayList<String> pageLinks = new ArrayList<> (WebPagesContentReader.processPage(WebPagesContentReader.getPage("https://www.google.com/404"), "https://www.google.com/404", "https://www.google.com/404"));
         Assertions.assertEquals(0, pageLinks.size());
     }
 }

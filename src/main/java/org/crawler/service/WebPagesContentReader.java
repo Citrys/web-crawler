@@ -1,27 +1,36 @@
-package org.monzo.service;
+package org.crawler.service;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WebPagesContentReader {
+    static ExponentialBackoffStrategy backoff = new ExponentialBackoffStrategy();
 
     public static Document getPage(String url) {
         try {
             Connection connection = Jsoup.connect(url);
-            Document document = connection.get();
-            if (connection.response().statusCode() == 200) {
-                return document;
-            } else {
-                // TODO change to throw proper error with code, implement retries and throttling in service returns too many requests error code
-                return null;
-            }
+
+            return backoff.attempt(
+                    () -> {
+                        try {
+                            return connection.get();
+                        } catch (IOException e) {
+                            throw new RuntimeException(String.valueOf(connection.response().statusCode()),e);
+                        }
+                    },
+                    r -> {
+                        final int statusCode = connection.response().statusCode();
+                        return statusCode == 200;
+                    }
+            );
         } catch (Exception e) {
             return null;
         }
