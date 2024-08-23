@@ -13,6 +13,8 @@ q:qbuild/
 *.iml
 *.ipr
 out/
+build/
+/build/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
