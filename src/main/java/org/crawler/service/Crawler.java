@@ -20,7 +20,7 @@ public class Crawler {
     }
 
     public void runCrawler(int parallelFactor) {
-        ThreadPoolExecutor executorService = (ThreadPoolExecutor)Executors.newCachedThreadPool();
+        ThreadPoolExecutor executorService = (ThreadPoolExecutor) Executors.newCachedThreadPool();
         for (int i = 0; i < parallelFactor; i++) {
             Runnable task = this::crawlUrls;
             executorService.submit(task);

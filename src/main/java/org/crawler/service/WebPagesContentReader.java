@@ -23,7 +23,7 @@ public class WebPagesContentReader {
                         try {
                             return connection.get();
                         } catch (IOException e) {
-                            throw new RuntimeException(String.valueOf(connection.response().statusCode()),e);
+                            throw new RuntimeException(String.valueOf(connection.response().statusCode()), e);
                         }
                     },
                     r -> {
@@ -39,7 +39,7 @@ public class WebPagesContentReader {
     public static Set<String> processPage(Document document, String url, String baseDomainUrl) {
         Set<String> targetLinks = new HashSet<>();
         if (document != null) {
-            for (Element link: document.select("a[href]")) {
+            for (Element link : document.select("a[href]")) {
                 String absoluteUrl = link.absUrl("href");
                 if (absoluteUrl.startsWith(baseDomainUrl) && !WebPagesContentReader.reduceImageTypeUrls(absoluteUrl)) {
                     targetLinks.add(absoluteUrl);

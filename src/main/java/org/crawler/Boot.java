@@ -1,8 +1,9 @@
 package org.crawler;
+
 import org.crawler.service.Crawler;
 
 public class Boot {
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         //Number of threads = Number of Available Cores * Target CPU utilization * (1 + Wait time / Service time)
         int availableCores = Runtime.getRuntime().availableProcessors();
         int parallelFactor = Math.max(availableCores - 1, 1);
