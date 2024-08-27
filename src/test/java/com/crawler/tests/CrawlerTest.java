@@ -31,7 +31,7 @@ public class CrawlerTest {
         System.setOut(originalOut);
     }
 
-    @Test
+    @Test()
     public void crawlPages() {
         service.stubFor(get(urlEqualTo("/"))
                 .willReturn(aResponse()
