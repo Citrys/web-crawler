@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.crawler.service.WebPagesContentReader;
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class WebPagesProcessingTest {
     @Test
@@ -26,7 +28,11 @@ public class WebPagesProcessingTest {
 
     @Test
     public void shouldProcessInvalidUrl() {
-        ArrayList<String> pageLinks = new ArrayList<> (WebPagesContentReader.processPage(WebPagesContentReader.getPage("https://www.google.com/404"), "https://www.google.com/404", "https://www.google.com/404"));
-        Assertions.assertEquals(0, pageLinks.size());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            new ArrayList<> (WebPagesContentReader.processPage(WebPagesContentReader.getPage("https://www.google.com/404"), "https://www.google.com/404", "https://www.google.com/404"));
+        });
+
+        Assertions.assertTrue("Could not process the requested url".contains(exception.getMessage()));
     }
 }

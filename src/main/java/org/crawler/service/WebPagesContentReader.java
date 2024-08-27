@@ -1,39 +1,50 @@
 package org.crawler.service;
-
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
+import io.github.resilience4j.retry.RetryRegistry;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+
+
+@Slf4j
 public class WebPagesContentReader {
-    static ExponentialBackoffStrategy backoff = new ExponentialBackoffStrategy();
+
+    static RetryConfig config = RetryConfig.custom()
+            .maxAttempts(3)
+            .waitDuration(Duration.of(2, SECONDS))
+            .build();
+    static RetryRegistry registry = RetryRegistry.of(config);
+    static Retry retry = registry.retry("WebContentReader", config);
 
     public static Document getPage(String url) {
+        Supplier<Document> supplier = () -> getWebPageFromUrl(url);
+        Supplier<Document> getPageWithRetry = Retry.decorateSupplier(retry, supplier);
+        getPageWithRetry.get();
+        return getPageWithRetry.get();
+    }
+
+    private static Document getWebPageFromUrl(String url) throws RuntimeException {
         try {
             Connection connection = Jsoup.connect(url);
-
-            return backoff.attempt(
-                    () -> {
-                        try {
-                            return connection.get();
-                        } catch (IOException e) {
-                            throw new RuntimeException(String.valueOf(connection.response().statusCode()), e);
-                        }
-                    },
-                    r -> {
-                        final int statusCode = connection.response().statusCode();
-                        return statusCode == 200;
-                    }
-            );
-        } catch (Exception e) {
-            return null;
+            return connection.get();
+        } catch (IOException e) {
+            log.error(String.valueOf(e));
+            throw new RuntimeException("Could not process the requested url");
         }
+
     }
 
     public static Set<String> processPage(Document document, String url, String baseDomainUrl) {
@@ -45,8 +56,7 @@ public class WebPagesContentReader {
                     targetLinks.add(absoluteUrl);
                 }
             }
-            System.out.printf("- Current url %s, amount of links %s, page urls %s", url, targetLinks.size(), targetLinks);
-            System.out.println();
+            log.info("Current url {}, amount of links {}, page urls {}", url, targetLinks.size(), targetLinks);
         }
         return targetLinks;
     }
