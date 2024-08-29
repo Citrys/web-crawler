@@ -1,22 +1,28 @@
 package org.crawler.service;
 
+import org.crawler.model.CrawledPage;
+
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 public class Crawler {
     private final String startUrl;
     private final String baseDomainUrl;
     private final ConcurrentHashMap<String, String> visitedUrls = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<String> toBeVisited = new ConcurrentLinkedQueue<>();
+    // Queue to hold data to be saved to the database
+    private final BlockingQueue<CrawledPage> dataQueue = new LinkedBlockingQueue<>();
+    private DatabaseService databaseService;
 
     public Crawler(String startUrl, String baseDomainUrl) {
         System.out.println("Web Crawler created");
         this.startUrl = startUrl;
         this.baseDomainUrl = baseDomainUrl;
+        this.databaseService = new DatabaseService(dataQueue);
         initCrawler();
     }
 
@@ -26,6 +32,8 @@ public class Crawler {
             Runnable task = this::crawlUrls;
             executorService.submit(task);
         }
+        // TODO make poison pill better structured
+        dataQueue.add(new CrawledPage("", "", new String[]{""}, true ));
         executorService.shutdown();
     }
 
@@ -45,6 +53,7 @@ public class Crawler {
                     }
                 }
                 visitedUrls.put(nextUrl, nextUrl);
+                dataQueue.add(this.convertToCrawlerData(nextUrl, nextSetOfUrls));
             }
         }
     }
@@ -56,5 +65,41 @@ public class Crawler {
                             .getPage(this.startUrl), this.startUrl, this.baseDomainUrl)
                     .forEach(this.toBeVisited::offer);
         }
+        this.databaseService.runDatabasePool(4);
     }
+
+    private String calculateHashFromURL(String url) {
+        try {
+            // Create a MessageDigest instance for SHA-256
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            // Apply the hash function to the URL
+            byte[] hashBytes = digest.digest(url.getBytes(StandardCharsets.UTF_8));
+
+            // Convert the byte array into a hexadecimal string
+            StringBuilder hexString = new StringBuilder(2 * hashBytes.length);
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // Handle the exception
+            throw new RuntimeException("SHA-256 algorithm not found", e);
+        }
+    }
+
+    private CrawledPage convertToCrawlerData(String primaryUrl, ArrayList<String> containingUrls) {
+        return new CrawledPage(
+                this.calculateHashFromURL(primaryUrl),
+                primaryUrl,
+                containingUrls.toArray(new String[0]),
+                false
+        );
+    }
+
 }
