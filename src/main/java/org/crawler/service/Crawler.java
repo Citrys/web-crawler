@@ -2,7 +2,6 @@ package org.crawler.service;
 
 import org.crawler.model.CrawledPage;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -16,7 +15,7 @@ public class Crawler {
     private final ConcurrentLinkedQueue<String> toBeVisited = new ConcurrentLinkedQueue<>();
     // Queue to hold data to be saved to the database
     private final BlockingQueue<CrawledPage> dataQueue = new LinkedBlockingQueue<>();
-    private DatabaseService databaseService;
+    private final DatabaseService databaseService;
 
     public Crawler(String startUrl, String baseDomainUrl) {
         System.out.println("Web Crawler created");
