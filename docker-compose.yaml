@@ -1,0 +1,21 @@
+# @format
+
+version: '3.4'
+services:
+  service:
+    restart: "no"
+
+    build: .
+
+  mongo:
+    image: mongo:6.0.5
+    hostname: mongo1
+    container_name: mongo1
+    command: --replSet rs0 --bind_ip_all
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo1:27017',priority:1}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      start_period: 30s
+      retries: 3
+    ports:
+      - '27017:27017'
