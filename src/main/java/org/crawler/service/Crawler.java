@@ -32,7 +32,11 @@ public class Crawler {
             executorService.submit(task);
         }
         // TODO make poison pill better structured
-        dataQueue.add(new CrawledPage("", "", new String[]{""}, true ));
+        dataQueue.add(new CrawledPage(
+                "",
+                "",
+               // new String[]{""},
+                true ));
         executorService.shutdown();
     }
 
@@ -96,7 +100,7 @@ public class Crawler {
         return new CrawledPage(
                 this.calculateHashFromURL(primaryUrl),
                 primaryUrl,
-                containingUrls.toArray(new String[0]),
+              //  containingUrls.toArray(new String[0]),
                 false
         );
     }

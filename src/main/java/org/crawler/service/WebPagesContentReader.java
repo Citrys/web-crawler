@@ -56,7 +56,6 @@ public class WebPagesContentReader {
                     targetLinks.add(absoluteUrl);
                 }
             }
-            log.info("Current url {}, amount of links {}", url, targetLinks.size());
         }
         return targetLinks;
     }
